@@ -1,0 +1,40 @@
+{
+  "gcash": {
+    "accountName": "USTP Cafeteria Admin (Finance Office)",
+    "accountNumber": "0917-882-9912",
+    "instructions": "Send exact amount via GCash Express Send. Save the receipt image and copy your 13-digit Reference No.",
+    "isEnabled": true
+  },
+  "bank": {
+    "bankName": "Landbank of the Philippines (USTP CDO Campus)",
+    "accountHolder": "USTP CDO Cafeteria Management",
+    "accountNumber": "3401-2290-88",
+    "instructions": "Transfer via InstaPay or PESONet. In remarks, enter your Stall Number and Stall Name.",
+    "isEnabled": true
+  },
+  "qrCode": {
+    "imageUrl": "/uploads/admin/official_qr.svg",
+    "instructions": "Scan using GCash, Maya, Landbank, or any QR Ph app. Verify that merchant shows USTP CDO CAFETERIA.",
+    "isEnabled": true
+  },
+  "plans": {
+    "weekly": {
+      "price": 25,
+      "durationDays": 7,
+      "name": "Weekly Plan",
+      "description": "₱25 for 7 full calendar days of cafeteria portal access. Flexible and convenient.",
+      "isEnabled": true
+    },
+    "monthly": {
+      "price": 100,
+      "billingCycle": "calendar_month",
+      "name": "Monthly Plan",
+      "description": "₱100 for one full month. Regular renewal deadline is the last day of the calendar month.",
+      "isEnabled": true
+    }
+  },
+  "updatedAt": "2026-11-20T23:05:58.700Z",
+  "updatedBy": "System Setup",
+  "freeTrialDays": 14,
+  "trialEnabled": true
+}

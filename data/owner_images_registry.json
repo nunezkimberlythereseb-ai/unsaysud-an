@@ -1,0 +1,68 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-10-05T01:20:51.918Z",
+  "description": "Permanent Protected Stall-Owner Uploaded Images Master Registry",
+  "images": [
+    {
+      "imageId": "img_stall_1___swirly_bits_item_101_1791161176075",
+      "storageId": "stall_stall_1_swirly_bits_item_101_1791161176075.jpg",
+      "persistentImageUrl": "/uploads/dishes/stall_stall_1_swirly_bits_item_101_1791161176075.jpg?v=1791161176075",
+      "menuId": 101,
+      "stallName": "Stall 1 — Swirly Bits",
+      "stallNo": "Stall 1",
+      "ownerId": "cred_Stall 1",
+      "dishName": "Flavored Wings + Rice + Free Small Drink",
+      "dishCategory": "Rice Meals",
+      "dishPrice": 55,
+      "uploadTimestamp": 1791161176075,
+      "isProtected": true,
+      "active": true
+    },
+    {
+      "imageId": "img_stall_1___swirly_bits_item_102_1791161187130",
+      "storageId": "stall_stall_1_swirly_bits_item_102_1791161187130.jpg",
+      "persistentImageUrl": "/uploads/dishes/stall_stall_1_swirly_bits_item_102_1791161187130.jpg?v=1791161187130",
+      "menuId": 102,
+      "stallName": "Stall 1 — Swirly Bits",
+      "stallNo": "Stall 1",
+      "ownerId": "cred_Stall 1",
+      "dishName": "Ice Cream (Small Cone)",
+      "dishCategory": "Desserts",
+      "dishPrice": 15,
+      "uploadTimestamp": 1791161187130,
+      "isProtected": true,
+      "active": true
+    },
+    {
+      "imageId": "img_stall_1___swirly_bits_item_103_1791161243999",
+      "storageId": "stall_stall_1_swirly_bits_item_103_1791161243999.jpg",
+      "persistentImageUrl": "/uploads/dishes/stall_stall_1_swirly_bits_item_103_1791161243999.jpg?v=1791161243999",
+      "menuId": 103,
+      "stallName": "Stall 1 — Swirly Bits",
+      "stallNo": "Stall 1",
+      "ownerId": "cred_Stall 1",
+      "dishName": "Ice Cream (Big Cone)",
+      "dishCategory": "Desserts",
+      "dishPrice": 30,
+      "uploadTimestamp": 1791161243999,
+      "isProtected": true,
+      "active": true
+    },
+    {
+      "imageId": "img_stall_1___swirly_bits_item_104_1791161254074",
+      "storageId": "stall_stall_1_swirly_bits_item_104_1791161254074.jpg",
+      "persistentImageUrl": "/uploads/dishes/stall_stall_1_swirly_bits_item_104_1791161254074.jpg?v=1791161254074",
+      "menuId": 104,
+      "stallName": "Stall 1 — Swirly Bits",
+      "stallNo": "Stall 1",
+      "ownerId": "cred_Stall 1",
+      "dishName": "Ice Cream Cup with Toppings",
+      "dishCategory": "Desserts",
+      "dishPrice": 45,
+      "uploadTimestamp": 1791161254074,
+      "isProtected": true,
+      "active": true
+    }
+  ],
+  "archivedDishes": []
+}

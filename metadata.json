@@ -1,0 +1,8 @@
+{
+  "name": "unsaysud-antech-1/ustpcdocafeteria",
+  "description": "Smart USTP CDO Cafeteria budget matcher, live food discovery, and stall management platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

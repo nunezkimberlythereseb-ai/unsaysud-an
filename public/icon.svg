@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+
+  <!-- Subtle inner plate border -->
+  <circle cx="256" cy="256" r="210" stroke="#ffedd5" stroke-opacity="0.15" stroke-width="6" fill="none"/>
+
+  <g filter="url(#shadow)">
+    <!-- Serving Cloche Dome -->
+    <path d="M128 296 C128 190 200 156 256 156 C312 156 384 190 384 296 Z" fill="#FFFFFF"/>
+    
+    <!-- Cloche Top Knob -->
+    <circle cx="256" cy="140" r="22" fill="#FFFFFF"/>
+    <path d="M250 148 L262 148 L259 162 L253 162 Z" fill="#FFFFFF"/>
+
+    <!-- Serving Plate Base -->
+    <rect x="100" y="296" width="312" height="28" rx="14" fill="#FFFFFF"/>
+    <rect x="120" y="324" width="272" height="12" rx="6" fill="url(#accentGrad)"/>
+
+    <!-- Steam swirls rising -->
+    <path d="M220 105 C210 95 210 80 220 70" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M256 95 C250 82 250 68 256 55" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M292 105 C302 95 302 80 292 70" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+    <!-- Sparkle accents -->
+    <polygon points="360,120 366,134 380,140 366,146 360,160 354,146 340,140 354,134" fill="#fed7aa"/>
+    <polygon points="144,140 148,150 158,154 148,158 144,168 140,158 130,154 140,150" fill="#fed7aa"/>
+  </g>
+</svg>

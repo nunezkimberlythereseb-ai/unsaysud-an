@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" width="400" height="440" style="background: #ffffff; font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Header -->
+  <rect x="0" y="0" width="400" height="70" fill="#007DFE" rx="0"/>
+  <text x="200" y="32" fill="#FFFFFF" font-size="16" font-weight="900" text-anchor="middle" letter-spacing="1">USTP CDO CAFETERIA</text>
+  <text x="200" y="52" fill="#E0F2FE" font-size="12" font-weight="700" text-anchor="middle">OFFICIAL MERCHANT PAYMENT QR</text>
+
+  <!-- Card Body -->
+  <rect x="25" y="85" width="350" height="310" rx="20" fill="#FAF7F2" stroke="#E5E0D8" stroke-width="2"/>
+  
+  <!-- QR Frame Outer -->
+  <rect x="70" y="105" width="260" height="260" rx="16" fill="#FFFFFF" stroke="#007DFE" stroke-width="3"/>
+
+  <!-- Top-Left Finder Pattern -->
+  <rect x="90" y="125" width="56" height="56" fill="#1E293B" rx="8"/>
+  <rect x="100" y="135" width="36" height="36" fill="#FFFFFF" rx="4"/>
+  <rect x="108" y="143" width="20" height="20" fill="#007DFE" rx="3"/>
+
+  <!-- Top-Right Finder Pattern -->
+  <rect x="254" y="125" width="56" height="56" fill="#1E293B" rx="8"/>
+  <rect x="264" y="135" width="36" height="36" fill="#FFFFFF" rx="4"/>
+  <rect x="272" y="143" width="20" height="20" fill="#007DFE" rx="3"/>
+
+  <!-- Bottom-Left Finder Pattern -->
+  <rect x="90" y="289" width="56" height="56" fill="#1E293B" rx="8"/>
+  <rect x="100" y="299" width="36" height="36" fill="#FFFFFF" rx="4"/>
+  <rect x="108" y="307" width="20" height="20" fill="#007DFE" rx="3"/>
+
+  <!-- Simulated QR Data Matrix Pixels -->
+  <!-- Top Rows between finders -->
+  <rect x="160" y="125" width="12" height="12" fill="#1E293B"/>
+  <rect x="180" y="125" width="24" height="12" fill="#1E293B"/>
+  <rect x="220" y="125" width="12" height="12" fill="#1E293B"/>
+  <rect x="160" y="145" width="24" height="12" fill="#1E293B"/>
+  <rect x="200" y="145" width="12" height="12" fill="#1E293B"/>
+  <rect x="228" y="145" width="12" height="12" fill="#1E293B"/>
+  <rect x="172" y="165" width="12" height="12" fill="#1E293B"/>
+  <rect x="196" y="165" width="20" height="12" fill="#1E293B"/>
+
+  <!-- Middle Rows -->
+  <rect x="90" y="195" width="12" height="12" fill="#1E293B"/>
+  <rect x="114" y="195" width="20" height="12" fill="#1E293B"/>
+  <rect x="146" y="195" width="12" height="12" fill="#1E293B"/>
+  <rect x="170" y="195" width="24" height="12" fill="#1E293B"/>
+  <rect x="206" y="195" width="12" height="12" fill="#1E293B"/>
+  <rect x="230" y="195" width="24" height="12" fill="#1E293B"/>
+  <rect x="266" y="195" width="12" height="12" fill="#1E293B"/>
+  <rect x="290" y="195" width="20" height="12" fill="#1E293B"/>
+
+  <!-- Center Badge Area -->
+  <rect x="165" y="215" width="70" height="40" rx="8" fill="#007DFE"/>
+  <text x="200" y="240" fill="#FFFFFF" font-size="12" font-weight="900" text-anchor="middle">QR PH</text>
+
+  <rect x="90" y="215" width="24" height="12" fill="#1E293B"/>
+  <rect x="126" y="215" width="12" height="12" fill="#1E293B"/>
+  <rect x="248" y="215" width="12" height="12" fill="#1E293B"/>
+  <rect x="272" y="215" width="24" height="12" fill="#1E293B"/>
+
+  <rect x="90" y="235" width="12" height="12" fill="#1E293B"/>
+  <rect x="114" y="235" width="24" height="12" fill="#1E293B"/>
+  <rect x="248" y="235" width="24" height="12" fill="#1E293B"/>
+  <rect x="284" y="235" width="12" height="12" fill="#1E293B"/>
+
+  <rect x="90" y="255" width="20" height="12" fill="#1E293B"/>
+  <rect x="122" y="255" width="12" height="12" fill="#1E293B"/>
+  <rect x="146" y="255" width="36" height="12" fill="#1E293B"/>
+  <rect x="194" y="255" width="12" height="12" fill="#1E293B"/>
+  <rect x="218" y="255" width="36" height="12" fill="#1E293B"/>
+  <rect x="266" y="255" width="12" height="12" fill="#1E293B"/>
+  <rect x="290" y="255" width="20" height="12" fill="#1E293B"/>
+
+  <!-- Lower Rows between bottom-left finder & right area -->
+  <rect x="160" y="289" width="12" height="24" fill="#1E293B"/>
+  <rect x="184" y="289" width="24" height="12" fill="#1E293B"/>
+  <rect x="220" y="289" width="12" height="12" fill="#1E293B"/>
+  <rect x="244" y="289" width="32" height="12" fill="#1E293B"/>
+  <rect x="288" y="289" width="22" height="12" fill="#1E293B"/>
+
+  <rect x="184" y="313" width="12" height="12" fill="#1E293B"/>
+  <rect x="208" y="313" width="24" height="20" fill="#1E293B"/>
+  <rect x="244" y="313" width="12" height="32" fill="#1E293B"/>
+  <rect x="268" y="313" width="20" height="12" fill="#1E293B"/>
+  <rect x="300" y="313" width="10" height="32" fill="#1E293B"/>
+
+  <rect x="160" y="333" width="36" height="12" fill="#1E293B"/>
+  <rect x="268" y="333" width="20" height="12" fill="#1E293B"/>
+
+  <!-- Footer Info -->
+  <text x="200" y="415" fill="#475569" font-size="11" font-weight="700" text-anchor="middle">Scan with GCash, Maya, Landbank, BDO, or any QR Ph App</text>
+</svg>
