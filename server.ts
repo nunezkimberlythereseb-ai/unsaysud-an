@@ -269,14 +269,21 @@ async function startServer() {
   // ==========================================================================
 
   app.get("/api/admin/bootstrap-status", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
     res.json({ success: true, ...getAdminBootstrapStatus() });
   });
 
   app.post("/api/admin/bootstrap", (req, res) => {
-    const { name, username, email, password, passcode } = req.body;
+    const { name, username, email, password, passcode } = req.body || {};
     const result = bootstrapFirstAdmin({ name, username, email, password, passcode });
     if (!result.success || !result.admin || !result.token) {
-      return res.status(400).json({ error: result.error || "Failed to initialize administrator." });
+      const status = result.alreadyInitialized || result.invalidPasscode ? 403 : 400;
+      return res.status(status).json({
+        error: result.error || "Failed to initialize administrator.",
+        alreadyInitialized: Boolean(result.alreadyInitialized)
+      });
     }
     recordRegistrationEvent(result.admin.id, "admin");
     logAuditAction(
@@ -523,6 +530,12 @@ async function startServer() {
 
   app.post("/api/auth/register", (req, res) => {
     try {
+      if (req.body?.role && String(req.body.role).toLowerCase() === "admin") {
+        return res.status(403).json({
+          error: "Administrator accounts cannot be created through stall registration."
+        });
+      }
+
       const {
         stallNo,
         stallName,

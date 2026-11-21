@@ -31,7 +31,8 @@ import {
   WifiOff,
   Award,
   Flame,
-  Globe
+  Globe,
+  EyeOff
 } from 'lucide-react';
 import {
   UserSubscription,
@@ -87,10 +88,13 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
   const [bootstrapChecked, setBootstrapChecked] = useState(false);
   const [isInitialized, setIsInitialized] = useState(true);
   const [envPasscodeConfigured, setEnvPasscodeConfigured] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [authMode, setAuthMode] = useState<'setup' | 'signin'>('signin');
 
   // Login Form State (Zero hardcoded defaults)
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -101,18 +105,45 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
   const [bootPassword, setBootPassword] = useState('');
   const [bootConfirmPassword, setBootConfirmPassword] = useState('');
   const [bootPasscode, setBootPasscode] = useState('');
+  const [showBootPassword, setShowBootPassword] = useState(false);
+  const [showBootPasscode, setShowBootPasscode] = useState(false);
 
   useEffect(() => {
     setCurrentAdmin(adminUser || null);
   }, [adminUser]);
+
+  const refreshBootstrapStatus = async () => {
+    setBootstrapChecked(false);
+    setStatusError(null);
+    const status = await fetchAdminBootstrapStatusAPI();
+    if (status.success) {
+      setIsInitialized(status.initialized);
+      setEnvPasscodeConfigured(status.envPasscodeConfigured);
+      setAuthMode(status.initialized ? 'signin' : 'setup');
+      setStatusError(null);
+    } else {
+      setIsInitialized(true);
+      setAuthMode('signin');
+      setStatusError(status.error || 'Unable to verify Super Administrator setup status.');
+    }
+    setBootstrapChecked(true);
+  };
 
   useEffect(() => {
     if (currentAdmin) return;
     let active = true;
     fetchAdminBootstrapStatusAPI().then((status) => {
       if (!active) return;
-      setIsInitialized(status.initialized);
-      setEnvPasscodeConfigured(status.envPasscodeConfigured);
+      if (status.success) {
+        setIsInitialized(status.initialized);
+        setEnvPasscodeConfigured(status.envPasscodeConfigured);
+        setAuthMode(status.initialized ? 'signin' : 'setup');
+        setStatusError(null);
+      } else {
+        setIsInitialized(true);
+        setAuthMode('signin');
+        setStatusError(status.error || 'Unable to verify Super Administrator setup status.');
+      }
       setBootstrapChecked(true);
     });
     return () => {
@@ -341,9 +372,15 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
       setBootPassword('');
       setBootConfirmPassword('');
       setBootPasscode('');
+      setIsInitialized(true);
+      setAuthMode('signin');
       setCurrentAdmin(res.admin);
       if (onLoginSuccess) onLoginSuccess(res.admin);
     } else {
+      if (res.alreadyInitialized) {
+        setIsInitialized(true);
+        setAuthMode('signin');
+      }
       setLoginError(res.error || 'Failed to initialize administrator account.');
     }
   };
@@ -627,33 +664,37 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
   }, [auditLogs, auditSearch]);
 
   // =========================================================================
-  // GATE 1: FIRST-RUN BOOTSTRAP OR ADMIN SIGN IN
+  // GATE 1: ONE-TIME INITIAL SUPER ADMIN SETUP OR SUPER ADMIN SIGN IN
   // =========================================================================
   if (!currentAdmin) {
     if (!bootstrapChecked) {
       return (
         <div className="max-w-md mx-auto py-16 text-center text-xs text-stone-500">
-          Checking administrator security state...
+          Checking Super Administrator setup status...
         </div>
       );
     }
 
-    if (!isInitialized) {
+    if (!isInitialized && authMode === 'setup') {
       return (
         <div className="max-w-md mx-auto py-8 sm:py-12 px-4">
           <form
             onSubmit={handleBootstrapSubmit}
             className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 shadow-sm space-y-4 text-xs"
           >
-            <div className="text-center space-y-2 pb-2 border-b border-stone-100">
+            <div className="text-center space-y-2 pb-3 border-b border-stone-100">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-black text-[10px] uppercase tracking-wider">
+                <Lock className="w-3 h-3" />
+                One-Time Initial Setup
+              </div>
               <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center mx-auto">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h1 className="text-xl font-black text-stone-900 font-display">
-                Initialize Super Administrator Account
+                Super Admin Account Setup
               </h1>
               <p className="text-xs text-stone-600">
-                Create the single centralized Super Administrator account that controls the entire Our Sud-an platform. Only one administrator account can exist.
+                No Super Administrator exists yet. Create the sole centralized Super Administrator account for Our Sud-an. Once created, admin registration permanently locks.
               </p>
             </div>
 
@@ -671,7 +712,7 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
                 required
                 value={bootName}
                 onChange={(e) => setBootName(e.target.value)}
-                placeholder="Administrator full name"
+                placeholder="Authorized app owner full name"
                 className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl"
               />
             </div>
@@ -682,9 +723,10 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
                 <input
                   type="text"
                   required
+                  minLength={3}
                   value={bootUsername}
                   onChange={(e) => setBootUsername(e.target.value)}
-                  placeholder="Admin username"
+                  placeholder="superadmin"
                   className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl font-mono"
                 />
               </div>
@@ -696,7 +738,7 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
                   required
                   value={bootEmail}
                   onChange={(e) => setBootEmail(e.target.value)}
-                  placeholder="admin@example.com"
+                  placeholder="owner@oursudan.ph"
                   className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl"
                 />
               </div>
@@ -706,21 +748,31 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
               <label className="block font-black text-stone-800 mb-1">
                 Password (min 8 chars) *
               </label>
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={bootPassword}
-                onChange={(e) => setBootPassword(e.target.value)}
-                placeholder="Strong password"
-                className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl"
-              />
+              <div className="relative">
+                <input
+                  type={showBootPassword ? 'text' : 'password'}
+                  required
+                  minLength={8}
+                  value={bootPassword}
+                  onChange={(e) => setBootPassword(e.target.value)}
+                  placeholder="Strong password"
+                  className="w-full min-h-[44px] pl-3 pr-10 bg-stone-50 border border-stone-200 rounded-xl"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowBootPassword((v) => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700"
+                  aria-label={showBootPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showBootPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block font-black text-stone-800 mb-1">Confirm Password *</label>
               <input
-                type="password"
+                type={showBootPassword ? 'text' : 'password'}
                 required
                 minLength={8}
                 value={bootConfirmPassword}
@@ -731,18 +783,31 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
             </div>
 
             {envPasscodeConfigured && (
-              <div>
-                <label className="block font-black text-stone-800 mb-1">
-                  Server Bootstrap Passcode *
+              <div className="p-3 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">
+                <label className="block font-black text-purple-950">
+                  Authorized Setup Passcode (Server Secret) *
                 </label>
-                <input
-                  type="password"
-                  required
-                  value={bootPasscode}
-                  onChange={(e) => setBootPasscode(e.target.value)}
-                  placeholder="Enter configured setup passcode"
-                  className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl"
-                />
+                <div className="relative">
+                  <input
+                    type={showBootPasscode ? 'text' : 'password'}
+                    required
+                    value={bootPasscode}
+                    onChange={(e) => setBootPasscode(e.target.value)}
+                    placeholder="Enter ADMIN_PASSCODE secret"
+                    className="w-full min-h-[44px] pl-3 pr-10 bg-white border border-purple-200 rounded-xl"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowBootPasscode((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700"
+                    aria-label={showBootPasscode ? 'Hide passcode' : 'Show passcode'}
+                  >
+                    {showBootPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-purple-900/80 leading-relaxed">
+                  Protected by the server-side <code className="font-mono font-bold">ADMIN_PASSCODE</code> configuration so only the authorized app owner can claim initial Super Admin access.
+                </p>
               </div>
             )}
 
@@ -751,8 +816,28 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
               disabled={isAuthenticating}
               className="w-full min-h-[46px] bg-purple-700 hover:bg-purple-800 text-white font-black text-sm rounded-xl transition disabled:opacity-50"
             >
-              {isAuthenticating ? 'Creating Administrator...' : 'Initialize & Enter Admin Portal'}
+              {isAuthenticating ? 'Creating Super Administrator...' : 'Create Super Administrator & Lock Setup'}
             </button>
+
+            <div className="flex flex-col gap-2 pt-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginError(null);
+                  setAuthMode('signin');
+                }}
+                className="w-full text-center text-xs font-bold text-purple-700 hover:underline"
+              >
+                Already initialized? Go to Super Admin Sign In →
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('home')}
+                className="w-full text-center text-xs font-bold text-stone-500 hover:text-stone-900"
+              >
+                ← Return to Customer Portal
+              </button>
+            </div>
           </form>
         </div>
       );
@@ -775,6 +860,45 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
               Restricted to the sole primary platform Super Administrator.
             </p>
           </div>
+
+          {statusError && (
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 space-y-2">
+              <div className="flex items-start gap-2 font-semibold">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
+                <span>{statusError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={refreshBootstrapStatus}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-black text-[11px]"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                Retry Status Check
+              </button>
+            </div>
+          )}
+
+          {!statusError && !isInitialized && (
+            <div className="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 space-y-2">
+              <p className="font-black text-purple-950 flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-purple-700" />
+                One-Time Super Admin Account Setup Available
+              </p>
+              <p className="text-[11px] text-purple-900">
+                No Super Administrator has been registered yet. Complete one-time initial setup to claim the Super Admin account.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginError(null);
+                  setAuthMode('setup');
+                }}
+                className="w-full min-h-[40px] rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-black text-xs transition"
+              >
+                Open One-Time Super Admin Setup
+              </button>
+            </div>
+          )}
 
           {loginError && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 font-semibold flex items-center gap-2">
@@ -799,14 +923,24 @@ export const AdminSubscriptionDashboard: React.FC<AdminSubscriptionDashboardProp
 
           <div>
             <label className="block font-black text-stone-800 mb-1">Password *</label>
-            <input
-              type="password"
-              required
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              placeholder="Enter administrator password"
-              className="w-full min-h-[44px] px-3 bg-stone-50 border border-stone-200 rounded-xl"
-            />
+            <div className="relative">
+              <input
+                type={showLoginPassword ? 'text' : 'password'}
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="Enter administrator password"
+                className="w-full min-h-[44px] pl-3 pr-10 bg-stone-50 border border-stone-200 rounded-xl"
+              />
+              <button
+                type="button"
+                onClick={() => setShowLoginPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700"
+                aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+              >
+                {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <button

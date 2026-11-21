@@ -164,9 +164,15 @@ export function requireRole(...roles: UserRole[]) {
   };
 }
 
+function timingSafeCompare(a: string, b: string): boolean {
+  const hashA = crypto.createHash("sha256").update(a).digest();
+  const hashB = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
+
 export function getAdminBootstrapStatus(): { initialized: boolean; envPasscodeConfigured: boolean } {
   const users = readUsers();
-  const hasAdmin = users.some((u) => u.role === "admin" && u.status === "active");
+  const hasAdmin = users.some((u) => u.role === "admin");
   const envPass = Boolean(process.env.ADMIN_PASSCODE && process.env.ADMIN_PASSCODE.trim().length > 0);
   return {
     initialized: hasAdmin,
@@ -180,35 +186,67 @@ export function bootstrapFirstAdmin(params: {
   email: string;
   password: string;
   passcode?: string;
-}): { success: boolean; admin?: AuthUser; token?: string; error?: string } {
+}): {
+  success: boolean;
+  admin?: AuthUser;
+  token?: string;
+  error?: string;
+  alreadyInitialized?: boolean;
+  invalidPasscode?: boolean;
+} {
   const users = readUsers();
   const existingAdmin = users.find((u) => u.role === "admin");
   if (existingAdmin) {
     return {
       success: false,
-      error: "Administrator account already initialized. Public admin registration is disabled."
+      alreadyInitialized: true,
+      error: "Super Administrator account is already initialized. Public admin registration is permanently disabled."
     };
   }
 
   const envPass = process.env.ADMIN_PASSCODE?.trim();
-  if (envPass && params.passcode?.trim() !== envPass) {
-    return { success: false, error: "Invalid server administrator setup passcode." };
+  if (envPass) {
+    const providedPass = (params.passcode || "").trim();
+    if (!providedPass || !timingSafeCompare(providedPass, envPass)) {
+      return {
+        success: false,
+        invalidPasscode: true,
+        error: "Invalid server administrator setup passcode. Enter the configured ADMIN_PASSCODE secret."
+      };
+    }
   }
 
-  const name = params.name.trim();
-  const username = params.username.trim().toLowerCase();
-  const email = params.email.trim().toLowerCase();
-  const password = params.password;
+  const name = (params.name || "").trim();
+  const username = (params.username || "").trim().toLowerCase();
+  const email = (params.email || "").trim().toLowerCase();
+  const password = params.password || "";
 
-  if (!name || !username || !email || !password || password.length < 8) {
+  if (!name || username.length < 3 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
     return {
       success: false,
-      error: "Name, username, valid email, and password (minimum 8 characters) are required."
+      error: "Full name, username (min 3 chars), valid email, and password (minimum 8 characters) are required."
+    };
+  }
+
+  if (!/^[a-z0-9._-]+$/.test(username)) {
+    return {
+      success: false,
+      error: "Username may only contain letters, numbers, dots, underscores, and hyphens."
     };
   }
 
   if (users.some((u) => u.username.toLowerCase() === username || u.email.toLowerCase() === email)) {
     return { success: false, error: "Username or email is already registered." };
+  }
+
+  // Re-verify single-admin constraint immediately before persisting
+  const latestUsers = readUsers();
+  if (latestUsers.some((u) => u.role === "admin")) {
+    return {
+      success: false,
+      alreadyInitialized: true,
+      error: "Super Administrator account is already initialized. Public admin registration is permanently disabled."
+    };
   }
 
   const { hash, salt } = hashSecret(password);
@@ -228,8 +266,8 @@ export function bootstrapFirstAdmin(params: {
     loginCount: 1
   };
 
-  users.push(newAdmin);
-  writeUsers(users);
+  latestUsers.push(newAdmin);
+  writeUsers(latestUsers);
   const pub = toPublicUser(newAdmin);
   return { success: true, admin: pub, token: signAuthToken(pub) };
 }
@@ -265,7 +303,7 @@ export function loginAdminAccount(params: {
 
   const passwordValid =
     verifySecret(password, admin.passwordHash, admin.passwordSalt) ||
-    (Boolean(envPass) && password === envPass);
+    (Boolean(envPass) && timingSafeCompare(password, envPass!));
 
   if (!passwordValid) {
     return { success: false, error: "Invalid administrator credentials." };

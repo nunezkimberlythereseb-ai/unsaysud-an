@@ -796,15 +796,34 @@ export async function markNotificationsReadAPI(
 // ============================================================================
 
 export async function fetchAdminBootstrapStatusAPI(): Promise<{
+  success: boolean;
   initialized: boolean;
   envPasscodeConfigured: boolean;
+  error?: string;
 }> {
   try {
-    const res = await fetch('/api/admin/bootstrap-status');
-    if (!res.ok) return { initialized: true, envPasscodeConfigured: false };
-    return await res.json();
+    const res = await fetch('/api/admin/bootstrap-status', { cache: 'no-store' });
+    if (!res.ok) {
+      return {
+        success: false,
+        initialized: true,
+        envPasscodeConfigured: false,
+        error: 'Unable to check Super Admin initialization status.'
+      };
+    }
+    const data = await res.json();
+    return {
+      success: true,
+      initialized: Boolean(data.initialized),
+      envPasscodeConfigured: Boolean(data.envPasscodeConfigured)
+    };
   } catch {
-    return { initialized: true, envPasscodeConfigured: false };
+    return {
+      success: false,
+      initialized: true,
+      envPasscodeConfigured: false,
+      error: 'Network error checking Super Admin initialization status.'
+    };
   }
 }
 
@@ -814,7 +833,13 @@ export async function bootstrapAdminAPI(data: {
   email: string;
   password: string;
   passcode?: string;
-}): Promise<{ success: boolean; admin?: AuthUser; token?: string; error?: string }> {
+}): Promise<{
+  success: boolean;
+  admin?: AuthUser;
+  token?: string;
+  error?: string;
+  alreadyInitialized?: boolean;
+}> {
   try {
     const res = await fetch('/api/admin/bootstrap', {
       method: 'POST',
@@ -822,7 +847,13 @@ export async function bootstrapAdminAPI(data: {
       body: JSON.stringify(data)
     });
     const result = await res.json();
-    if (!res.ok) return { success: false, error: result.error || 'Admin initialization failed.' };
+    if (!res.ok) {
+      return {
+        success: false,
+        error: result.error || 'Admin initialization failed.',
+        alreadyInitialized: Boolean(result.alreadyInitialized)
+      };
+    }
     if (result.token && result.admin) {
       setAuthSession({ token: result.token, user: result.admin });
     }
